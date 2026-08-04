@@ -11,10 +11,16 @@ on:
     paths:
       - 'packages/platform-core/**'
       - '.github/workflows/platform-core.yml'
+  schedule:
+    - cron: '29 12 * * 3'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: texas-platform-core-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-core:
@@ -25,5 +31,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate shared package boundaries
+      - name: Validate shared package release and boundaries
         run: node packages/platform-core/scripts/validate-package.mjs
+      - name: Upload compatibility manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: texas-platform-core-${{ github.run_id }}
+          path: |
+            packages/platform-core/release.json
+            packages/platform-core/consumers.json
+          retention-days: 90
