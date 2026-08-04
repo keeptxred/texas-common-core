@@ -1,0 +1,44 @@
+{
+  "contractVersion": "0.2.0",
+  "apiVersion": "1.0",
+  "reviewedAt": "2026-08-04",
+  "consumers": [
+    {
+      "consumer": "TexasDefined",
+      "repository": "keeptxred/TexasDefined",
+      "integration": "pinned-vendored-snapshot",
+      "capabilities": [
+        "entity-contracts",
+        "entity-canonicalization",
+        "deterministic-fingerprints",
+        "entity-set-diffs",
+        "baseline-quarantine",
+        "promotion-previews"
+      ],
+      "localExtensions": [
+        "status quarantine",
+        "coordinate validation",
+        "approval-token validation",
+        "rollback snapshots"
+      ],
+      "excludedDomains": ["branding", "routes", "supabase", "deployment"]
+    },
+    {
+      "consumer": "KeepTXRed",
+      "repository": "keeptxred/texas-heartland-hub",
+      "integration": "pinned-vendored-snapshot-with-adapter",
+      "capabilities": [
+        "entity-contracts",
+        "entity-canonicalization",
+        "deterministic-fingerprints"
+      ],
+      "localExtensions": [
+        "political entity registry",
+        "site visibility",
+        "editorial search",
+        "legacy entity relationships"
+      ],
+      "excludedDomains": ["representatives", "bills", "committees", "guides", "calculators", "branding", "routes"]
+    }
+  ]
+}
