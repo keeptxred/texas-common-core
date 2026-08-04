@@ -75,9 +75,9 @@ export const CONTENT_OWNERSHIP_RULES: ContentOwnershipRule[] = [
 ];
 
 export function ownershipRuleFor(domain: ContentDomain): ContentOwnershipRule {
-  const rule = CONTENT_OWNERSHIP_RULES.find((entry) => entry.domain === domain);
-  if (!rule) throw new Error(`No content ownership rule for ${domain}.`);
-  return rule;
+  const found = CONTENT_OWNERSHIP_RULES.find((entry) => entry.domain === domain);
+  if (!found) throw new Error(`No content ownership rule for ${domain}.`);
+  return found;
 }
 
 export function decideCrossSiteContent(candidate: ContentCandidate): ContentDecision {
@@ -101,11 +101,11 @@ export function decideCrossSiteContent(candidate: ContentCandidate): ContentDeci
     };
   }
 
-  if (exactDuplicate || !rule.fullRepublicationAllowed) {
-    reasons.push(exactDuplicate ? 'The proposed content matches the source fingerprint.' : 'Full republication is prohibited for this domain.');
+  if (exactDuplicate) {
+    reasons.push('The proposed content matches the source fingerprint.');
     reasons.push(`The canonical owner is ${rule.owner}.`);
     return {
-      disposition: exactDuplicate ? 'reject-duplicate' : 'cross-link-only',
+      disposition: 'reject-duplicate',
       canonicalOwner: rule.owner,
       canonicalUrl: candidate.sourceCanonicalUrl,
       robots: 'noindex,follow',
@@ -122,6 +122,19 @@ export function decideCrossSiteContent(candidate: ContentCandidate): ContentDeci
       canonicalOwner: rule.owner,
       canonicalUrl: candidate.proposedUrl ?? candidate.sourceCanonicalUrl,
       robots: 'index,follow',
+      requiredAttribution: true,
+      reasons,
+    };
+  }
+
+  if (!rule.fullRepublicationAllowed) {
+    reasons.push('Full republication is prohibited for this domain.');
+    reasons.push(`The canonical owner is ${rule.owner}.`);
+    return {
+      disposition: 'cross-link-only',
+      canonicalOwner: rule.owner,
+      canonicalUrl: candidate.sourceCanonicalUrl,
+      robots: 'noindex,follow',
       requiredAttribution: true,
       reasons,
     };
