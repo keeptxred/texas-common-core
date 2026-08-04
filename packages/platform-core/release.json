@@ -3,7 +3,7 @@
   "version": "0.3.0",
   "apiVersion": "1.1",
   "releasedAt": "2026-08-04",
-  "commit": "ae620ae45aa49f27fac983b949fd9204d82f4008",
+  "commit": "1ff8a2f276b9536c729f67ee3d00e5a713ad1164",
   "capabilities": [
     "entity-contracts",
     "entity-canonicalization",
@@ -17,5 +17,5 @@
   ],
   "consumers": ["TexasDefined", "KeepTXRed"],
   "breaking": false,
-  "summary": "Begins Phase 5 with canonical editorial ownership, duplicate-content prevention, and governed cross-site publishing decisions."
+  "summary": "Adds governed cross-site content ownership, duplicate prevention, safe derivative disposition, and canonical reference rules."
 }
