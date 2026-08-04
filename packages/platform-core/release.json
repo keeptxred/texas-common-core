@@ -1,0 +1,18 @@
+{
+  "package": "@keeptxred/texas-platform-core",
+  "version": "0.2.0",
+  "apiVersion": "1.0",
+  "releasedAt": "2026-08-04",
+  "commit": "6c5b3e86b0e01e82f22ebf3dde0b1844ffe391a8",
+  "capabilities": [
+    "entity-contracts",
+    "entity-canonicalization",
+    "deterministic-fingerprints",
+    "entity-set-diffs",
+    "baseline-quarantine",
+    "promotion-previews"
+  ],
+  "consumers": ["TexasDefined", "KeepTXRed"],
+  "breaking": false,
+  "summary": "Adds the versioned consumer compatibility contract and formalizes both production consumers."
+}
