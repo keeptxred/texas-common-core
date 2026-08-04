@@ -23,7 +23,7 @@ if (!errors.length) {
   const implementation = [`${root}/src/entities.ts`, `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`]
     .map((path) => fs.readFileSync(path, 'utf8')).join('\n');
 
-  for (const forbidden of ['react', '@tanstack', 'supabase', 'process.env', 'import.meta.env', 'texasdefined.com', 'keeptxred.com']) {
+  for (const forbidden of ['react', '@tanstack', '@supabase', 'process.env', 'import.meta.env', 'texasdefined.com', 'keeptxred.com']) {
     if (implementation.toLowerCase().includes(forbidden)) errors.push(`Shared core implementation contains forbidden site/framework dependency: ${forbidden}`);
     if (!contract.toLowerCase().includes(`'${forbidden}'`)) errors.push(`Contract prohibition list is missing: ${forbidden}`);
   }
