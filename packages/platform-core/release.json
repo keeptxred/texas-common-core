@@ -1,9 +1,9 @@
 {
   "package": "@keeptxred/texas-platform-core",
-  "version": "0.3.0",
-  "apiVersion": "1.1",
+  "version": "0.4.0",
+  "apiVersion": "1.2",
   "releasedAt": "2026-08-04",
-  "commit": "1ff8a2f276b9536c729f67ee3d00e5a713ad1164",
+  "commit": "d1be8d321b312cd3349807eed61edf8cc917d0df",
   "capabilities": [
     "entity-contracts",
     "entity-canonicalization",
@@ -13,9 +13,11 @@
     "promotion-previews",
     "content-ownership",
     "duplicate-content-prevention",
-    "cross-site-disposition"
+    "cross-site-disposition",
+    "publication-gates",
+    "reviewed-overrides"
   ],
   "consumers": ["TexasDefined", "KeepTXRed"],
   "breaking": false,
-  "summary": "Adds governed cross-site content ownership, duplicate prevention, safe derivative disposition, and canonical reference rules."
+  "summary": "Adds enforceable publication gates, immutable decision fingerprints, and reviewed time-limited overrides for manual-review content."
 }
