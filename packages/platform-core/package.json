@@ -1,0 +1,17 @@
+{
+  "name": "@keeptxred/texas-platform-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./entities": "./src/entities.ts",
+    "./fingerprint": "./src/fingerprint.ts",
+    "./promotion": "./src/promotion.ts"
+  },
+  "files": ["src", "README.md"],
+  "scripts": {
+    "validate": "node scripts/validate-package.mjs"
+  }
+}
