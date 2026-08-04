@@ -4,7 +4,8 @@ const root = 'packages/platform-core';
 const required = [
   `${root}/package.json`, `${root}/README.md`, `${root}/consumers.json`, `${root}/release.json`,
   `${root}/src/index.ts`, `${root}/src/contract.ts`, `${root}/src/content-intelligence.ts`,
-  `${root}/src/publication-gate.ts`, `${root}/src/entities.ts`, `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`,
+  `${root}/src/publication-gate.ts`, `${root}/src/governance-events.ts`, `${root}/src/entities.ts`,
+  `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`,
 ];
 const errors = [];
 for (const path of required) if (!fs.existsSync(path)) errors.push(`Missing shared-core file: ${path}`);
@@ -15,10 +16,11 @@ if (!errors.length) {
   const contract = fs.readFileSync(`${root}/src/contract.ts`, 'utf8');
   const contentIntelligence = fs.readFileSync(`${root}/src/content-intelligence.ts`, 'utf8');
   const publicationGate = fs.readFileSync(`${root}/src/publication-gate.ts`, 'utf8');
+  const governanceEvents = fs.readFileSync(`${root}/src/governance-events.ts`, 'utf8');
   const allTypeScript = required.filter((path) => path.endsWith('.ts')).map((path) => fs.readFileSync(path, 'utf8')).join('\n');
   const implementation = [
-    `${root}/src/content-intelligence.ts`, `${root}/src/publication-gate.ts`, `${root}/src/entities.ts`,
-    `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`,
+    `${root}/src/content-intelligence.ts`, `${root}/src/publication-gate.ts`, `${root}/src/governance-events.ts`,
+    `${root}/src/entities.ts`, `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`,
   ].map((path) => fs.readFileSync(path, 'utf8')).join('\n');
 
   for (const forbidden of ['react', '@tanstack', '@supabase', 'process.env', 'import.meta.env', 'texasdefined.com', 'keeptxred.com']) {
@@ -30,6 +32,8 @@ if (!errors.length) {
     'CONTENT_OWNERSHIP_RULES', 'ownershipRuleFor', 'decideCrossSiteContent', 'validateContentOwnershipRules',
     'PublicationOverride', 'fingerprintContentDecision', 'createPublicationOverride',
     'validatePublicationOverride', 'enforcePublicationDecision',
+    'GovernanceEvent', 'createGovernanceEvent', 'validateGovernanceEvent',
+    'aggregateGovernanceEvents', 'detectOwnershipDrift',
     'TexasEntityRecord', 'canonicalizeEntity', 'fingerprintEntities',
     'diffEntitySets', 'quarantineEntity', 'createPromotionPreview',
   ]) if (!allTypeScript.includes(symbol)) errors.push(`Shared core export missing: ${symbol}`);
@@ -49,6 +53,14 @@ if (!errors.length) {
     "status: 'blocked'", "status: 'override-required'", 'decisionFingerprint',
     'Override reason must contain at least 20 characters.', 'Override is expired.', 'Override token is invalid.',
   ]) if (!publicationGate.includes(safeguard)) errors.push(`Publication gate safeguard missing: ${safeguard}`);
+
+  for (const safeguard of [
+    'candidateFingerprint', 'decisionFingerprint', 'eventId', 'ownership-drift-detected',
+    'blockedRate', 'overrideAcceptanceRate', 'bySite', 'byDomain', 'byDisposition',
+  ]) if (!governanceEvents.includes(safeguard)) errors.push(`Governance analytics safeguard missing: ${safeguard}`);
+  for (const prohibitedField of ['body', 'caption', 'email', 'ipAddress', 'accessToken']) {
+    if (governanceEvents.includes(`${prohibitedField}:`)) errors.push(`Governance event model must not store ${prohibitedField}.`);
+  }
 
   if (packageJson.version !== consumers.contractVersion) errors.push('Package version and consumer contract version differ.');
   if (packageJson.version !== release.version) errors.push('Package version and release version differ.');
@@ -75,4 +87,4 @@ if (errors.length) {
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
-console.log('Texas platform core publication gates, ownership, duplicate prevention, release, consumers, boundaries, and exports are valid.');
+console.log('Texas platform core governance events, analytics, ownership drift, publication gates, release, consumers, boundaries, and exports are valid.');
