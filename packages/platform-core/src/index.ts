@@ -5,3 +5,4 @@ export * from './fingerprint';
 export * from './governance-events';
 export * from './promotion';
 export * from './publication-gate';
+export * from './site-ownership';
