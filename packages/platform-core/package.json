@@ -1,6 +1,6 @@
 {
   "name": "@keeptxred/texas-platform-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "sideEffects": false,
@@ -10,7 +10,8 @@
     "./content-intelligence": "./src/content-intelligence.ts",
     "./entities": "./src/entities.ts",
     "./fingerprint": "./src/fingerprint.ts",
-    "./promotion": "./src/promotion.ts"
+    "./promotion": "./src/promotion.ts",
+    "./publication-gate": "./src/publication-gate.ts"
   },
   "files": ["src", "README.md"],
   "scripts": {
