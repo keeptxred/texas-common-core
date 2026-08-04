@@ -1,6 +1,6 @@
 {
-  "contractVersion": "0.3.0",
-  "apiVersion": "1.1",
+  "contractVersion": "0.4.0",
+  "apiVersion": "1.2",
   "reviewedAt": "2026-08-04",
   "consumers": [
     {
@@ -13,13 +13,12 @@
         "deterministic-fingerprints",
         "entity-set-diffs",
         "baseline-quarantine",
-        "promotion-previews"
-      ],
-      "plannedCapabilities": [
+        "promotion-previews",
         "content-ownership",
         "duplicate-content-prevention",
         "cross-site-disposition"
       ],
+      "plannedCapabilities": ["publication-gates", "reviewed-overrides"],
       "localExtensions": [
         "status quarantine",
         "coordinate validation",
@@ -35,13 +34,12 @@
       "capabilities": [
         "entity-contracts",
         "entity-canonicalization",
-        "deterministic-fingerprints"
-      ],
-      "plannedCapabilities": [
+        "deterministic-fingerprints",
         "content-ownership",
         "duplicate-content-prevention",
         "cross-site-disposition"
       ],
+      "plannedCapabilities": ["publication-gates", "reviewed-overrides"],
       "localExtensions": [
         "political entity registry",
         "site visibility",
