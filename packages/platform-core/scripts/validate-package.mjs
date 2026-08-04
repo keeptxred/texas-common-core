@@ -19,17 +19,20 @@ if (!errors.length) {
   const consumers = JSON.parse(fs.readFileSync(`${root}/consumers.json`, 'utf8'));
   const release = JSON.parse(fs.readFileSync(`${root}/release.json`, 'utf8'));
   const contract = fs.readFileSync(`${root}/src/contract.ts`, 'utf8');
-  const combined = required.filter((path) => path.endsWith('.ts')).map((path) => fs.readFileSync(path, 'utf8')).join('\n');
+  const allTypeScript = required.filter((path) => path.endsWith('.ts')).map((path) => fs.readFileSync(path, 'utf8')).join('\n');
+  const implementation = [`${root}/src/entities.ts`, `${root}/src/fingerprint.ts`, `${root}/src/promotion.ts`]
+    .map((path) => fs.readFileSync(path, 'utf8')).join('\n');
 
   for (const forbidden of ['react', '@tanstack', 'supabase', 'process.env', 'import.meta.env', 'texasdefined.com', 'keeptxred.com']) {
-    if (combined.toLowerCase().includes(forbidden)) errors.push(`Shared core contains forbidden site/framework dependency: ${forbidden}`);
+    if (implementation.toLowerCase().includes(forbidden)) errors.push(`Shared core implementation contains forbidden site/framework dependency: ${forbidden}`);
+    if (!contract.toLowerCase().includes(`'${forbidden}'`)) errors.push(`Contract prohibition list is missing: ${forbidden}`);
   }
   for (const symbol of [
     'PLATFORM_CORE_CONTRACT', 'PlatformCoreConsumerManifest', 'validateConsumerManifest',
     'TexasEntityRecord', 'canonicalizeEntity', 'fingerprintEntities',
     'diffEntitySets', 'quarantineEntity', 'createPromotionPreview',
   ]) {
-    if (!combined.includes(symbol)) errors.push(`Shared core export missing: ${symbol}`);
+    if (!allTypeScript.includes(symbol)) errors.push(`Shared core export missing: ${symbol}`);
   }
   if (packageJson.version !== consumers.contractVersion) errors.push('Package version and consumer contract version differ.');
   if (packageJson.version !== release.version) errors.push('Package version and release version differ.');
