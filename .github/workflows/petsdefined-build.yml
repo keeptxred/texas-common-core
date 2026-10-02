@@ -1,0 +1,45 @@
+name: Validate PetsDefined Build
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'vite.config.ts'
+      - 'package.json'
+      - 'bun.lock'
+      - '.github/workflows/petsdefined-build.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'vite.config.ts'
+      - 'package.json'
+      - 'bun.lock'
+      - '.github/workflows/petsdefined-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: petsdefined-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-petsdefined:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_DEFINED_BRAND: petsdefined
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Build PetsDefined
+        run: bun run build
