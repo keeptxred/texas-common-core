@@ -1,7 +1,9 @@
 import "./lib/error-capture";
 
+import { activeBrand } from "./brand/active";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { buildPetsDefinedRobots, buildPetsDefinedSitemap } from "./lib/pets-site-index";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -16,6 +18,31 @@ async function getServerEntry(): Promise<ServerEntry> {
     );
   }
   return serverEntryPromise;
+}
+
+function maybeServeBrandInfrastructure(request: Request): Response | undefined {
+  if (activeBrand.identity.id !== "petsdefined") return undefined;
+
+  const { pathname } = new URL(request.url);
+  if (pathname === "/robots.txt") {
+    return new Response(buildPetsDefinedRobots(activeBrand.identity.domain), {
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+      },
+    });
+  }
+
+  if (pathname === "/sitemap.xml") {
+    return new Response(buildPetsDefinedSitemap(activeBrand.identity.domain), {
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=3600",
+      },
+    });
+  }
+
+  return undefined;
 }
 
 // h3 swallows in-handler throws into a normal 500 Response with body
@@ -47,6 +74,9 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const infrastructureResponse = maybeServeBrandInfrastructure(request);
+      if (infrastructureResponse) return infrastructureResponse;
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
