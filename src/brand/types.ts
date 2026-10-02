@@ -1,9 +1,8 @@
 /**
- * Brand contracts. Nothing here is TexasDefined-specific: a second brand
- * (KeepTXRed) supplies its own object of the same shape.
+ * Brand contracts. Shared brands supply their own object of this shape.
  */
 
-export type BrandId = "texasdefined" | "keeptxred";
+export type BrandId = "texasdefined" | "keeptxred" | "petsdefined";
 
 export interface BrandNavItem {
   label: string;
@@ -15,7 +14,6 @@ export interface BrandNavItem {
   image?: { src: string; alt: string };
   children?: BrandNavItem[];
 }
-
 
 export interface BrandFooterColumn {
   title: string;
