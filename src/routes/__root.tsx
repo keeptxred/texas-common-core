@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BrandProvider } from "@/brand/context";
-import { texasDefinedBrand } from "@/brand/texasdefined";
+import { activeBrand } from "@/brand/active";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
@@ -21,7 +21,7 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <p className="eyebrow text-primary">404</p>
-        <h1 className="mt-4 font-display text-4xl text-foreground">This road doesn't go through</h1>
+        <h1 className="mt-4 font-display text-4xl text-foreground">We couldn't find that page</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
@@ -48,11 +48,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-2xl tracking-tight text-foreground">
-          This page didn't load
-        </h1>
+        <h1 className="font-display text-2xl tracking-tight text-foreground">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Something went wrong. You can try refreshing or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -81,21 +79,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: texasDefinedBrand.seo.defaultTitle },
-      { name: "description", content: texasDefinedBrand.seo.defaultDescription },
-      { name: "author", content: texasDefinedBrand.identity.name },
-      { property: "og:site_name", content: texasDefinedBrand.identity.name },
+      { title: activeBrand.seo.defaultTitle },
+      { name: "description", content: activeBrand.seo.defaultDescription },
+      { name: "author", content: activeBrand.identity.name },
+      { property: "og:site_name", content: activeBrand.identity.name },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: activeBrand.seo.defaultTitle },
+      { property: "og:description", content: activeBrand.seo.defaultDescription },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: texasDefinedBrand.seo.twitterSite ?? "" },
-      { title: "Lovable App" },
-      { property: "og:title", content: "Lovable App" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "description", content: "Texas Platform Blueprint analyzes and designs a shared architecture for TexasDefined and KeepTXRed.com." },
-      { property: "og:description", content: "Texas Platform Blueprint analyzes and designs a shared architecture for TexasDefined and KeepTXRed.com." },
-      { name: "twitter:description", content: "Texas Platform Blueprint analyzes and designs a shared architecture for TexasDefined and KeepTXRed.com." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cdb5732f-2a7a-4801-9eca-91e51971a36b/id-preview-910f3ad9--f7b35bd7-2860-4e61-8740-4bbbdbe4c9af.lovable.app-1785699271964.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/cdb5732f-2a7a-4801-9eca-91e51971a36b/id-preview-910f3ad9--f7b35bd7-2860-4e61-8740-4bbbdbe4c9af.lovable.app-1785699271964.png" },
+      { name: "twitter:site", content: activeBrand.seo.twitterSite ?? "" },
+      { name: "twitter:title", content: activeBrand.seo.defaultTitle },
+      { name: "twitter:description", content: activeBrand.seo.defaultDescription },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -116,7 +110,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang={activeBrand.identity.locale.split("-")[0]}>
       <head>
         <HeadContent />
       </head>
@@ -133,11 +127,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrandProvider brand={texasDefinedBrand}>
+      <BrandProvider brand={activeBrand}>
         <div className="flex min-h-screen flex-col bg-background">
           <Header />
           <main id="main" className="flex-1">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
           <Footer />
