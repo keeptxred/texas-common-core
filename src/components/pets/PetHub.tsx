@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+
+import { researchQueueFor } from "@/data/pets/species";
 import type { BreedProfile, PetKind } from "@/domain/pets/types";
 
 const labels: Record<PetKind, { title: string; eyebrow: string; description: string }> = {
@@ -14,6 +16,7 @@ const labels: Record<PetKind, { title: string; eyebrow: string; description: str
 export function PetHub({ kind, breeds = [] }: { kind: PetKind; breeds?: BreedProfile[] }) {
   const copy = labels[kind];
   const breedPath = kind === "dog" ? "/dogs/breeds" : kind === "cat" ? "/cats/breeds" : null;
+  const researchQueue = researchQueueFor(kind);
 
   return (
     <div className="mx-auto w-full max-w-[1500px] px-4 py-10 sm:px-6 lg:px-10 xl:px-14">
@@ -48,6 +51,30 @@ export function PetHub({ kind, breeds = [] }: { kind: PetKind; breeds?: BreedPro
                 <h3 className="mt-2 font-display text-2xl text-foreground">{breed.name}</h3>
                 <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">{breed.summary}</p>
               </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!breedPath && researchQueue.length > 0 && (
+        <section className="py-10">
+          <div className="max-w-3xl">
+            <p className="eyebrow text-primary">Launch research queue</p>
+            <h2 className="mt-2 font-display text-3xl text-foreground">Species profiles being built</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              These are research targets, not published care pages. A species does not become indexable until its sources, care fields, health considerations, and image rights pass the publication gate.
+            </p>
+          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {researchQueue.map((item) => (
+              <article key={item.slug} className="rounded-2xl border border-border bg-card p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{item.status.replaceAll("-", " ")}</p>
+                <h3 className="mt-2 font-display text-2xl text-foreground">{item.name}</h3>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Research scope: {item.focusAreas.join(", ")}.
+                </p>
+                <p className="mt-4 text-xs font-medium text-muted-foreground">Not yet publishable or indexable</p>
+              </article>
             ))}
           </div>
         </section>
