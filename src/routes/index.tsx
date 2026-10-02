@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { activeBrand } from "@/brand/active";
 import { useBrand } from "@/brand/context";
 import { ArticleCard } from "@/components/editorial/ArticleCard";
 import { DestinationCard } from "@/components/editorial/DestinationCard";
@@ -9,11 +10,10 @@ import { FeatureHero } from "@/components/editorial/FeatureHero";
 import { GuideCard } from "@/components/editorial/GuideCard";
 import { NewsletterSignup } from "@/components/editorial/NewsletterSignup";
 import { Section, SectionHeader } from "@/components/editorial/SectionHeader";
-import type { Destination } from "@/data/types";
-
 import { CollectionStrip } from "@/components/commerce/CollectionStrip";
 import { Container } from "@/components/layout/Container";
-import { texasDefinedBrand } from "@/brand/texasdefined";
+import { PetsHome } from "@/components/pets/PetsHome";
+import type { Destination } from "@/data/types";
 import {
   articlesQuery,
   categoriesQuery,
@@ -25,40 +25,48 @@ import {
 } from "@/data/queries";
 import { buildMeta, canonicalLink } from "@/lib/seo";
 
-const description =
+const texasDescription =
   "A premium Texas lifestyle publication: lakes and cypress bayous, state parks, two-lane road trips, barbecue worth the wait, small towns, history, home and garden, and Texas-made goods.";
 
+const petsDescription =
+  "Practical, well-sourced pet guides covering breeds, species, care, training, behavior, nutrition, comparisons, tools, and responsible ownership.";
+
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: buildMeta(texasDefinedBrand, {
-      title: "Discover, Explore & Live Texas",
-      description,
-    }),
-    links: [canonicalLink(texasDefinedBrand, "/")],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@graph": [
-            {
-              "@type": "Organization",
-              name: texasDefinedBrand.identity.name,
-              url: `https://${texasDefinedBrand.identity.domain}`,
-              slogan: texasDefinedBrand.identity.tagline,
-            },
-            {
-              "@type": "WebSite",
-              name: texasDefinedBrand.identity.name,
-              url: `https://${texasDefinedBrand.identity.domain}`,
-              description,
-            },
-          ],
-        }),
-      },
-    ],
-  }),
+  head: () => {
+    const isPetsDefined = activeBrand.identity.id === "petsdefined";
+    const description = isPetsDefined ? petsDescription : texasDescription;
+    const title = isPetsDefined ? "Better Guides for Better Pet Care" : "Discover, Explore & Live Texas";
+
+    return {
+      meta: buildMeta(activeBrand, { title, description }),
+      links: [canonicalLink(activeBrand, "/")],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                name: activeBrand.identity.name,
+                url: `https://${activeBrand.identity.domain}`,
+                slogan: activeBrand.identity.tagline,
+              },
+              {
+                "@type": "WebSite",
+                name: activeBrand.identity.name,
+                url: `https://${activeBrand.identity.domain}`,
+                description,
+              },
+            ],
+          }),
+        },
+      ],
+    };
+  },
   loader: async ({ context }) => {
+    if (activeBrand.identity.id === "petsdefined") return;
+
     await Promise.all([
       context.queryClient.ensureQueryData(articlesQuery({ featured: true, limit: 5 })),
       context.queryClient.ensureQueryData(articlesQuery({ limit: 12 })),
@@ -73,11 +81,16 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(eventsQuery({ limit: 4 })),
     ]);
   },
-
   component: HomePage,
 });
 
 function HomePage() {
+  const brand = useBrand();
+  if (brand.identity.id === "petsdefined") return <PetsHome />;
+  return <TexasHomePage />;
+}
+
+function TexasHomePage() {
   const brand = useBrand();
   const { data: featured } = useSuspenseQuery(articlesQuery({ featured: true, limit: 5 }));
   const { data: latest } = useSuspenseQuery(articlesQuery({ limit: 12 }));
@@ -99,7 +112,6 @@ function HomePage() {
   const featuredDestinations = destinations.filter((item) => item.featured).slice(0, 4);
   const weekend = destinations.slice(0, 3);
   const hiddenGems = destinations.slice(3, 6);
-
 
   return (
     <>
@@ -156,9 +168,6 @@ function HomePage() {
           </ul>
         </Container>
       </Section>
-
-
-
 
       <Section tone="surface">
         <Container>
@@ -252,7 +261,6 @@ function HomePage() {
         </Section>
       )}
 
-
       <Section>
         <Container>
           <SectionHeader eyebrow="Hidden gems" title="Places the highway skipped" />
@@ -297,8 +305,6 @@ function HomePage() {
         destinations={roadTrips}
         regionName={regionName}
       />
-
-
 
       {wildlife && (
         <Section tone="surface">
@@ -410,7 +416,6 @@ function HomePage() {
   );
 }
 
-/** Local presentation helper: a titled row of destination cards. */
 function DestinationRow({
   eyebrow,
   title,
@@ -453,4 +458,3 @@ function DestinationRow({
     </Section>
   );
 }
-
